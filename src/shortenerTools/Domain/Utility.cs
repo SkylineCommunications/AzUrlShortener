@@ -81,7 +81,7 @@ namespace Cloud5mins.domain
                 log.LogWarning("Request was not authenticated.");
                 return new UnauthorizedResult();
             }
-
+            /*
             if (principal.FindFirst(ClaimTypes.GivenName) is null)
             {
                 log.LogError("Claim not Found");
@@ -91,6 +91,7 @@ namespace Cloud5mins.domain
                     StatusCode = System.Net.HttpStatusCode.BadRequest
                 });
             }
+            */
             return null;
         }
     }
