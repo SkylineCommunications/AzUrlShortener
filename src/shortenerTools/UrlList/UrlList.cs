@@ -54,7 +54,7 @@ namespace Cloud5mins.Function
             try
             {
                 var invalidRequest = Utility.CatchUnauthorize(principal, log);
-                /*
+                //
                 if (invalidRequest != null)
                 {
                     return invalidRequest;
@@ -64,7 +64,7 @@ namespace Cloud5mins.Function
                    userId = principal.FindFirst(ClaimTypes.GivenName).Value;
                    log.LogInformation("Authenticated user {user}.", userId);
                 }
-                */
+                //
                 result.UrlList = await stgHelper.GetAllShortUrlEntities();
                 result.UrlList = result.UrlList.Where(p => !(p.IsArchived ?? false)).ToList();
                 var host = string.IsNullOrEmpty(config["customDomain"]) ? req.Host.Host: config["customDomain"].ToString();
