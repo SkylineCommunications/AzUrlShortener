@@ -44,7 +44,6 @@ namespace Cloud5mins.Function
 
             try
             {
-                log.LogInformation($"Published.");
 
                 var result = new ListResponse();
                 string userId = string.Empty;
@@ -57,7 +56,6 @@ namespace Cloud5mins.Function
                 StorageTableHelper stgHelper = new StorageTableHelper(config["UlsDataStorage"]);
 
                 var invalidRequest = Utility.CatchUnauthorize(principal, log);
-
                 if (invalidRequest != null)
                 {
                     return invalidRequest;
@@ -68,14 +66,20 @@ namespace Cloud5mins.Function
                    log.LogInformation("Authenticated user {user}.", userId);
                 }
 
+                log.LogInformation($"Step 1");
                 result.UrlList = await stgHelper.GetAllShortUrlEntities();
+                log.LogInformation($"Step 2");
                 result.UrlList = result.UrlList.Where(p => !(p.IsArchived ?? false)).ToList();
+                log.LogInformation($"Step 3");
                 var host = string.IsNullOrEmpty(config["customDomain"]) ? req.Host.Host: config["customDomain"].ToString();
+
+                log.LogInformation($"Step 4"); 
                 foreach (ShortUrlEntity url in result.UrlList)
                 {
                     url.ShortUrl = Utility.GetShortUrl(host, url.RowKey);
                 }
 
+                log.LogInformation($"Step 5");
                 return new OkObjectResult(result);
             }
             catch (Exception ex)
