@@ -81,8 +81,9 @@ namespace Cloud5mins.domain
 
         private string GetActiveUrl()
         {
-            if(Schedules != null)
-                    return GetActiveUrl(DateTime.UtcNow);
+            // Disable Schedules since they cause issues with invalid Cron configurations.
+            //if(Schedules != null)
+            //        return GetActiveUrl(DateTime.UtcNow);
             return Url;
         }
         private string GetActiveUrl(DateTime pointInTime)
