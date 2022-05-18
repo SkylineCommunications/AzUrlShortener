@@ -41,20 +41,23 @@ namespace Cloud5mins.Function
         {
             log.LogInformation($"C# HTTP trigger function processed this request: {req}");
 
-            var result = new ListResponse();
-            string userId = string.Empty;
-            var config = new ConfigurationBuilder()
-                .SetBasePath(context.FunctionAppDirectory)
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-                .AddEnvironmentVariables()
-                .Build();
-
-            StorageTableHelper stgHelper = new StorageTableHelper(config["UlsDataStorage"]);
 
             try
             {
+                log.LogInformation($"Published.");
+
+                var result = new ListResponse();
+                string userId = string.Empty;
+                var config = new ConfigurationBuilder()
+                    .SetBasePath(context.FunctionAppDirectory)
+                    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+                    .AddEnvironmentVariables()
+                    .Build();
+
+                StorageTableHelper stgHelper = new StorageTableHelper(config["UlsDataStorage"]);
+
                 var invalidRequest = Utility.CatchUnauthorize(principal, log);
-                /*
+
                 if (invalidRequest != null)
                 {
                     return invalidRequest;
@@ -64,7 +67,7 @@ namespace Cloud5mins.Function
                    userId = principal.FindFirst(ClaimTypes.GivenName).Value;
                    log.LogInformation("Authenticated user {user}.", userId);
                 }
-                */
+
                 result.UrlList = await stgHelper.GetAllShortUrlEntities();
                 result.UrlList = result.UrlList.Where(p => !(p.IsArchived ?? false)).ToList();
                 var host = string.IsNullOrEmpty(config["customDomain"]) ? req.Host.Host: config["customDomain"].ToString();
@@ -72,6 +75,8 @@ namespace Cloud5mins.Function
                 {
                     url.ShortUrl = Utility.GetShortUrl(host, url.RowKey);
                 }
+
+                return new OkObjectResult(result);
             }
             catch (Exception ex)
             {
@@ -82,8 +87,6 @@ namespace Cloud5mins.Function
                     StatusCode =  HttpStatusCode.BadRequest
                 });
             }
-
-            return new OkObjectResult(result);
         }
     }
 }
