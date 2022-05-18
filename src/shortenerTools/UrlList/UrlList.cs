@@ -27,6 +27,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace Cloud5mins.Function
 {
@@ -80,7 +81,10 @@ namespace Cloud5mins.Function
                 }
 
                 log.LogInformation($"Step 5");
-                return new OkObjectResult(result);
+
+                var json = JsonConvert.SerializeObject(result);
+
+                return new OkObjectResult(json);
             }
             catch (Exception ex)
             {
