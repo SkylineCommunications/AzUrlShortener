@@ -18,7 +18,16 @@ namespace Cloud5mins.domain
             var bufferStart = pointInTime.AddMinutes(-DurationMinutes);
             var expires = pointInTime.AddMinutes(DurationMinutes);
 
-            CronExpression expression = CronExpression.Parse(Cron);
+            CronExpression expression;
+            try
+            {
+                expression = CronExpression.Parse(Cron);
+            }
+            catch (CronFormatException)
+            {
+                return false;
+            }
+
             var occurences = expression.GetOccurrences(bufferStart, expires);
 
             foreach (DateTime d in occurences)

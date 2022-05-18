@@ -66,24 +66,20 @@ namespace Cloud5mins.Function
                    userId = principal.FindFirst(ClaimTypes.GivenName).Value;
                    log.LogInformation("Authenticated user {user}.", userId);
                 }
-
-                log.LogInformation($"Step 1");
+                
                 result.UrlList = await stgHelper.GetAllShortUrlEntities();
-                log.LogInformation($"Step 2");
                 result.UrlList = result.UrlList.Where(p => !(p.IsArchived ?? false)).ToList();
-                log.LogInformation($"Step 3");
-                var host = string.IsNullOrEmpty(config["customDomain"]) ? req.Host.Host: config["customDomain"].ToString();
 
-                log.LogInformation($"Step 4"); 
+                var host = string.IsNullOrEmpty(config["customDomain"]) ? req.Host.Host: config["customDomain"].ToString();
+                
                 foreach (ShortUrlEntity url in result.UrlList)
                 {
                     url.ShortUrl = Utility.GetShortUrl(host, url.RowKey);
                 }
-
-                log.LogInformation($"Step 5");
-
+                
+                // Do explicit json serialization here, since the Getters on the object contain logic that sometimes fails.
+                // If it fails then azure functions does not report why the internal server error occurred.
                 var json = JsonConvert.SerializeObject(result);
-
                 return new OkObjectResult(json);
             }
             catch (Exception ex)
